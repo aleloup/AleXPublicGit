@@ -1,0 +1,20 @@
+# Set the path to the network share where the image is located
+$networkPath = "\\aspen.com\SYSVOL\aspen.com\aspen-logo.jpg"
+
+# Set the path to the local folder to create
+$localPath = "C:\local"
+
+# Create the local folder if it doesn't exist
+if (!(Test-Path $localPath)) {
+    New-Item -ItemType Directory -Path $localPath
+}
+
+# Copy the image from the network share to the local folder
+Copy-Item $networkPath -Destination $localPath
+
+# Set the copied image as the desktop wallpaper
+Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name Wallpaper -Value "$localPath\aspen-logo.jpg"
+RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters
+
+
+

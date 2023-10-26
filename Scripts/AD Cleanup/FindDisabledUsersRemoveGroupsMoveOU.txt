@@ -1,0 +1,21 @@
+Import-Module ActiveDirectory
+
+$SourceOU = "OU=_AlexTest,DC=aspen,DC=com"
+$TargetOU = "OU=_DisabledUsers,DC=aspen,DC=com"
+
+$DisabledUsers = Get-ADUser -Filter {Enabled -eq $false} -SearchBase $SourceOU
+
+foreach ($User in $DisabledUsers) {
+    # Get all groups for each disabled user
+    $UserGroups = Get-ADPrincipalGroupMembership $User | Select-Object -ExpandProperty Name
+
+    # Remove all groups except for "Domain Users" and "AzureO365E3"
+    foreach ($Group in $UserGroups) {
+        if ($Group -ne "Domain Users" -and $Group -ne "AzureO365E3") {
+            Remove-ADPrincipalGroupMembership $User -MemberOf $Group -Confirm:$false
+        }
+    }
+
+    # Move the user to the target OU
+    Move-ADObject -Identity $User.DistinguishedName -TargetPath $TargetOU
+}

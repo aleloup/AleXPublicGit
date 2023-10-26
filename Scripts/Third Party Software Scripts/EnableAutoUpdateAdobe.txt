@@ -1,0 +1,25 @@
+# Function to enable auto-update for Adobe products
+
+
+function EnableAdobeAutoUpdate {
+    $adobeUpdateKey = "HKLM:\SOFTWARE\Policies\Adobe\Updater"
+    $adobeUpdateProperty = "AUOptions"
+
+    # Check if the Adobe Updater key exists, and if not, create it
+    if (-Not (Test-Path $adobeUpdateKey)) {
+        New-Item -Path $adobeUpdateKey -Force | Out-Null
+    }
+
+    # Set the value to enable auto-update (value 2)
+    Set-ItemProperty -Path $adobeUpdateKey -Name $adobeUpdateProperty -Value 2
+    Write-Host "Auto-update for Adobe products has been enabled."
+}
+
+# Check if running with administrative privileges
+if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run this script with administrative privileges."
+    Exit 1
+}
+
+# Call the function to enable auto-update
+EnableAdobeAutoUpdate

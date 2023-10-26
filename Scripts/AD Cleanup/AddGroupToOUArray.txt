@@ -1,0 +1,31 @@
+# Import the Active Directory module
+Import-Module ActiveDirectory
+
+# Define the OU where you want to add the group to users
+$TargetOU = "OU=Users-HO,OU=Aspen,DC=aspen,DC=com"
+
+# Define the group you want to add to users
+$GroupToAdd = "HomeOfficeAll"
+
+# Get all users in the specified OU and its sub-OUs
+$Users = Get-ADUser -Filter * -SearchBase $TargetOU -SearchScope Subtree
+
+# Define OUs that should be excluded
+$ExcludedOUs = @(
+    "OU=Service Accounts,OU=Users-HO,OU=Aspen,DC=aspen,DC=com",
+    "OU=Test Account,OU=Users-HO,OU=Aspen,DC=aspen,DC=com",
+)
+
+foreach ($User in $Users) {
+    $UserDN = $User.DistinguishedName
+    $UserOU = [ADSI]"LDAP://$UserDN"
+
+    # Check if the user's OU is in the list of excluded OUs
+    if ($ExcludedOUs -notcontains $UserOU.Parent.Path) {
+        # Add the user to the specified group
+        Add-ADGroupMember -Identity $GroupToAdd -Members $User
+        Write-Host "Added $($User.SamAccountName) to $GroupToAdd."
+    } else {
+        Write-Host "Excluded: $($User.SamAccountName) is in an excluded OU."
+    }
+}

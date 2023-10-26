@@ -1,0 +1,5 @@
+Copy and paste this script to get list of all machines on domain in last 30 days. 
+
+C:\Windows\system32> Get-ADComputer -Filter * -Properties OperatingSystem, LastLogonDate | 
+     Where { $_.LastLogonDate -GT (Get-Date).AddDays(-30) } | 
+    FT Name, OperatingSystem, LastLogonDate | Out-File c:\ComputerLastLogonDate.csv

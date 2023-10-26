@@ -1,0 +1,38 @@
+# Import the Active Directory and Excel modules
+Import-Module ActiveDirectory
+
+
+# Specify the target Organizational Unit (OU)
+$ou = "OU=Users-prop,OU=Aspen,DC=aspen,DC=com"
+
+# Search for users with data in the description field within the specified OU
+$users = Get-ADUser -Filter { Description -like '*' } -SearchBase $ou -Properties Description
+
+# Create a new Excel workbook and worksheet
+$excel = New-Object -ComObject Excel.Application
+$workbook = $excel.Workbooks.Add()
+$worksheet = $workbook.Worksheets.Item(1)
+
+# Set column headers in the worksheet
+$worksheet.Cells.Item(1,1) = "Username"
+$worksheet.Cells.Item(1,2) = "Description"
+
+# Loop through the users and populate the worksheet with username and description
+$row = 2
+foreach ($user in $users) {
+    $username = $user.SamAccountName
+    $description = $user.Description
+
+    $worksheet.Cells.Item($row,1) = $username
+    $worksheet.Cells.Item($row,2) = $description
+
+    $row++
+}
+
+# Save the workbook to an Excel file
+$excelFilePath = "C:\Local\Description\PROP-USERS-Description.xlsx"
+$workbook.SaveAs($excelFilePath)
+
+# Close Excel
+$excel.Quit()
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null

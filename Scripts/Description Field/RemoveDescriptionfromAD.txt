@@ -1,0 +1,12 @@
+This script first sets the $ou variable to the distinguished name of the target OU. Then it uses the Get-ADUser cmdlet 
+to retrieve all users in the specified OU. The ForEach-Object cmdlet is used to iterate through each user, and the 
+Set-ADUser cmdlet is used to set the Description field to $null for each user.
+
+Note that you'll need to run this script with administrative privileges and have the Active Directory PowerShell module 
+installed on your computer. Also, please make sure to test this script in a non-production environment before running 
+it in a production environment to avoid any unintended consequences.
+
+$ou = "OU=TestingforAlex,OU=MIS,OU=Users-HO,OU=Aspen,DC=aspen,DC=com" # Replace with the distinguished name of the target OU
+Get-ADUser -Filter * -SearchBase $ou | ForEach-Object {
+    $_ | Set-ADUser -Description $null
+}

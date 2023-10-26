@@ -1,0 +1,28 @@
+# Define the target OU distinguished name
+$targetOU = "OU=_DisabledComputers,DC=aspen,DC=com"
+
+# Get the current date and subtract 6 months
+$cutOffDate = (Get-Date).AddMonths(-6)
+
+# Connect to the Active Directory module
+Import-Module ActiveDirectory
+
+# Get all computers in the target OU
+$computers = Get-ADComputer -SearchBase $targetOU -Filter "*" -Properties LastLogonDate
+
+# Iterate through each computer
+foreach ($computer in $computers) {
+    # Check if the LastLogonDate property exists
+    if ($computer.LastLogonDate) {
+        # Compare the LastLogonDate with the cutoff date
+        if ($computer.LastLogonDate -lt $cutOffDate) {
+            # Delete the computer and all leaf objects in the OU
+            Remove-ADObject -Identity $computer.DistinguishedName -Recursive -Confirm:$false
+            Write-Host "Deleted computer: $($computer.Name)"
+        }
+    } else {
+        # Delete the computer if the LastLogonDate property is not set
+        Remove-ADObject -Identity $computer.DistinguishedName -Recursive -Confirm:$false
+        Write-Host "Deleted computer (no LastLogonDate): $($computer.Name)"
+    }
+}

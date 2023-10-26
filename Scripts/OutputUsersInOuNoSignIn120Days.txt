@@ -1,0 +1,13 @@
+Outputs all users in an OU that have not logged in in a set period of time. 
+    
+    
+$ouPath = "OU=Users-HO,OU=aspen,DC=aspen,DC=com" # Replace with your OU path
+$inactiveDays = 120 # 4 months in days
+$excelFilePath = "C:\LOCAL\\InactiveUsers.xlsx" # Replace with your desired Excel file path
+
+$inactiveUsers = Get-ADUser -Filter {Enabled -eq $true} -SearchBase $ouPath -Properties LastLogonDate |
+    Where-Object { $_.LastLogonDate -lt (Get-Date).AddDays(-$inactiveDays) } |
+    Select-Object Name, SamAccountName, LastLogonDate
+
+$inactiveUsers | Export-Excel -Path $excelFilePath -AutoSize -AutoFilter -FreezeTopRow -WorksheetName "Inactive Users"
+

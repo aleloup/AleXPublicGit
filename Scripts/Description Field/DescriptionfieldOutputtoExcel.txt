@@ -1,0 +1,30 @@
+
+
+# Import the Active Directory module
+Import-Module ActiveDirectory
+
+# Specify the target Organizational Unit (OU)
+$ou = "OU=Acquisitions,OU=Users-HO,OU=Aspen,DC=aspen,DC=com"
+
+# Search for users with data in the description field within the specified OU
+$users = Get-ADUser -Filter { Description -like '*' } -SearchBase $ou -Properties Description
+
+# Create a string variable to store the output
+$output = ""
+
+# Loop through the users and append the username and description to the output
+foreach ($user in $users) {
+    $username = $user.SamAccountName
+    $description = $user.Description
+
+    $output += "Username: $username`n"
+    $output += "Description: $description`n"
+    $output += "-------------------------`n"
+}
+
+
+# Write the output to the text file
+$output |  Export-Excel -Path "C:\LOCAL\Description\Acquisit.xls" -AutoSize 
+
+# Output a success message
+Write-Host "User data exported to $outputFilePath"

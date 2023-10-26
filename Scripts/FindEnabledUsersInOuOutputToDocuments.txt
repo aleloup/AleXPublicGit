@@ -1,0 +1,12 @@
+Create powershell script to output enabled users in a specific OU to a text file and also include the last login date. 
+
+
+
+# Replace with the path and filename you want to use for the output file
+$ou = "OU=General Accounting,OU=Users-HO,OU=Aspen,DC=aspen,DC=com"
+$outputFile = "C:\Users\alex_leloup\Documents\GAUsers.txt"
+
+
+
+Get-ADUser -Filter {Enabled -eq $true} -SearchBase $ou -Properties LastLogonDate | Select-Object Name,LastLogonDate | Sort-Object Name | Out-File $outputFile
+

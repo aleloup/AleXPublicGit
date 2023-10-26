@@ -1,0 +1,18 @@
+Powershell script to remove client registration file - use this if smartdeploy machines are not checking in. Run script on endpoints. 
+
+
+
+$fileToDelete = "C:\Program Files\SmartDeploy\ClientService\ClientRegistration.json"
+
+# Check if the file exists
+if (Test-Path -Path $fileToDelete -PathType Leaf) {
+    # Remove the file
+    Remove-Item -Path $fileToDelete -Force
+    Write-Host "File '$fileToDelete' has been successfully deleted."
+}
+else {
+    Write-Host "File '$fileToDelete' does not exist."
+}
+
+
+

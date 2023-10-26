@@ -1,0 +1,24 @@
+# Define the distinguished name of the container in Active Directory where the computers are located
+$containerDN = "OU=_DisabledComputers,OU=Aspen,DC=aspen,DC=com"
+
+# Define the number of months since last activity to consider a computer inactive
+$inactiveMonths = 7
+
+# Get the current date and time
+$currentDate = Get-Date
+
+# Get all computer accounts in the specified container
+$computers = Get-ADComputer -SearchBase $containerDN -Filter * -Properties LastLogonDate
+
+# Disable the inactive computers
+foreach ($computer in $computers) {
+    $lastActivity = $computer.LastLogonDate
+
+    # Check if the computer hasn't been active in the specified number of months
+    if ($lastActivity -lt $currentDate.AddMonths(-$inactiveMonths)) {
+        # Disable the computer account
+        Set-ADComputer -Identity $computer -Enabled $false
+
+        Write-Output "Disabled computer $($computer.Name)"
+    }
+}

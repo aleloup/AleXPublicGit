@@ -1,0 +1,31 @@
+# Import the Active Directory module
+Import-Module ActiveDirectory
+
+# Define the OU path
+$ouPath ="OU=_DisabledComputers,DC=aspen,DC=com"  # Replace with your actual OU path
+
+# Calculate the date 6 months ago
+$sixMonthsAgo = (Get-Date).AddMonths(-6)
+
+# Get a list of computers in the specified OU
+$computers = Get-ADComputer -Filter * -SearchBase $ouPath -Properties LastLogonDate
+
+# Iterate through each computer and check the LastLogonDate
+foreach ($computer in $computers) {
+    $lastLogon = $computer.LastLogonDate
+
+    # Check if the computer hasn't been online in over 6 months
+    if ($lastLogon -lt $sixMonthsAgo) {
+        # Disable the computer account
+        Set-ADComputer -Identity $computer -Enabled $false
+        Write-Host "Disabled $($computer.Name) because it hasn't been online in over 6 months."
+    }
+}
+
+# Optionally, you can force replication in the domain controllers
+# to ensure that the changes take effect across the domain:
+# Get-ADDomainController -Filter * | ForEach-Object {
+#     Invoke-Command -ComputerName $_.Name -ScriptBlock {
+#         repadmin /syncall /APeD
+#     }
+# }

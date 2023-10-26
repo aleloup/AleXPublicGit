@@ -1,0 +1,20 @@
+# Import the Active Directory module
+Import-Module ActiveDirectory
+
+# Define the OU path
+$ouPath ="DC=aspen,DC=com"  # Replace with your actual OU path
+
+# Calculate the date 6 months ago
+$sixMonthsAgo = (Get-Date).AddMonths(-6)
+
+# Get a list of computers in the specified OU
+$computers = Get-ADComputer -Filter * -SearchBase $ouPath -Properties LastLogonDate
+
+# Filter the computers that haven't logged in for over 6 months
+$inactiveComputers = $computers | Where-Object { $_.LastLogonDate -lt $sixMonthsAgo }
+
+# Display a list of inactive computers
+$inactiveComputers | Select-Object Name, DistinguishedName, LastLogonDate | Format-Table -AutoSize
+
+# Output the total number of inactive computers
+Write-Host "Total inactive computers: $($inactiveComputers.Count)"

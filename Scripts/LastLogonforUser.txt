@@ -1,0 +1,12 @@
+Import-Module ActiveDirectory
+
+$user = Read-Host "Enter the username of the user you want to check the last logon time for"
+
+$userObject = Get-ADUser $user -Properties "LastLogonDate"
+
+if ($userObject -eq $null) {
+    Write-Output "User not found"
+}
+else {
+    Write-Output "The last logon time for user '$($userObject.Name)' is: $($userObject.LastLogonDate)"
+}

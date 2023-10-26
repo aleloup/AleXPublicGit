@@ -1,0 +1,29 @@
+# Define the Active Directory OU to search for computers
+$ou = "CN=Computers,DC=aspen,DC=com"
+
+# Define the path and filename for the output file
+$outputFile = "C:\Users\alex_leloup\Desktop\PS Reports\computerreports.xls"
+
+# Get all computer accounts in the specified OU
+$computers = Get-ADComputer -SearchBase $ou -Filter * -Properties LastLogonTimeStamp
+
+# Create an empty array to store the computer logon information
+$logonInfo = @()
+
+# Loop through each computer account
+foreach ($computer in $computers) {
+    # Retrieve the last logon timestamp and convert it to a readable format
+    $lastLogon = [DateTime]::FromFileTime($computer.LastLogonTimeStamp)
+
+    # Create a custom object with computer name and last logon time
+    $logonObject = [PSCustomObject]@{
+        ComputerName = $computer.Name
+        LastLogon = $lastLogon
+    }
+
+    # Add the logon object to the array
+    $logonInfo += $logonObject
+}
+
+# Export the logon information to the output file
+$logonInfo | Sort-Object LastLogon | Export-Excel -Path $outputFile

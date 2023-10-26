@@ -1,0 +1,16 @@
+# Set the name of the OU to remove the group from
+$ou = "OU=Properties,OU=Users-Prop,OU=Aspen,DC=aspen,DC=com"
+
+# Set the name of the group to remove from users
+$groupName = "AzPwChg"
+
+# Get all the user accounts in the OU
+$users = Get-ADUser -Filter * -SearchBase $ou
+
+# Remove the group from each user
+foreach ($user in $users) {
+    Remove-ADGroupMember -Identity "$groupName" -Members $user -Confirm:$false
+}
+
+# Output a message to confirm the script has completed
+Write-Host "The $groupName group has been removed from all users in $ou."

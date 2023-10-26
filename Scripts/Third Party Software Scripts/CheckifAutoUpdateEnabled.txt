@@ -1,0 +1,29 @@
+# Function to check if auto-update is enabled for Adobe products
+function CheckAdobeAutoUpdateStatus {
+    $adobeUpdateKey = "HKLM:\SOFTWARE\Policies\Adobe\Updater"
+    $adobeUpdateProperty = "AUOptions"
+
+    # Check if the Adobe Updater key exists
+    if (Test-Path $adobeUpdateKey) {
+        # Get the current value of the AUOptions property
+        $autoUpdateValue = Get-ItemProperty -Path $adobeUpdateKey -Name $adobeUpdateProperty -ErrorAction SilentlyContinue
+
+        # Check if the AUOptions property exists and its value is 2 (enabled)
+        if ($autoUpdateValue -ne $null -and $autoUpdateValue.$adobeUpdateProperty -eq 2) {
+            Write-Host "Auto-update for Adobe products is enabled."
+        } else {
+            Write-Host "Auto-update for Adobe products is disabled or not configured."
+        }
+    } else {
+        Write-Host "Auto-update for Adobe products is disabled or not configured."
+    }
+}
+
+# Check if running with administrative privileges
+if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run this script with administrative privileges."
+    Exit 1
+}
+
+# Call the function to check auto-update status
+CheckAdobeAutoUpdateStatus

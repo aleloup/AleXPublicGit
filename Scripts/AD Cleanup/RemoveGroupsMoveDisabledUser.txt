@@ -1,0 +1,33 @@
+Here is a PowerShell script that will remove all groups from multiple disabled users, 
+except the "Domain Users" group, and then move all of the disabled users to a new organizational unit:
+
+
+# Define the list of disabled user accounts
+$DisabledUsers = @("5035_kiosk", "Abigail_Rivera")
+
+# Define the new organizational unit
+$NewOU = "OU=_DisabledUsers,DC=aspen,DC=com"
+
+# Loop through the list of disabled users
+foreach ($User in $DisabledUsers) {
+
+  # Get the user account
+  $Account = Get-ADUser -Identity $User -Properties MemberOf
+
+  # Loop through the groups the user is a member of
+  foreach ($Group in $Account.MemberOf) {
+
+    # Get the group name
+    $GroupName = (Get-ADGroup -Identity $Group).Name
+
+    # Check if the group is not "Domain Users"
+    if ($GroupName -ne "Domain Users") {
+
+      # Remove the user from the group
+      Remove-ADPrincipalGroupMembership -Identity $User -MemberOf $Group
+    }
+  }
+
+  # Move the user to the new organizational unit
+  Move-ADObject -Identity $Account.DistinguishedName -TargetPath $NewOU
+}
