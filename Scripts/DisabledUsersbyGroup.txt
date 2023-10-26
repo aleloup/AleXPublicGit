@@ -1,4 +1,0 @@
-Script to find all disabled users in a particular group
-
- Get-ADGroupMember -Identity "CN=property,OU=Groups,OU=Aspen,DC=aspen,DC=com" -Recursive
- | %{Get-ADUser -Identity $_.distinguishedName -Properties Enabled | ?{$_.Enabled -eq $false}} | Select DistinguishedName,Enabled

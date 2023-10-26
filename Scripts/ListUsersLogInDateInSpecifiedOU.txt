@@ -1,8 +1,0 @@
-
-PowerShell script that will output the last sign-in date for every user in a specified OU:
-
-
-
-$ou = "OU=Users-HO,OU=aspen,DC=aspen,DC=com" # Replace this with the distinguished name of the OU you want to query
-$results = Get-ADUser -Filter * -SearchBase $ou -Properties LastLogonTimestamp | Select-Object Name, @{Name="LastLogon";Expression={[DateTime]::FromFileTime($_.LastLogonTimestamp)}} | Sort-Object LastLogon -Descending
-$results | Export-Excel -Path "C:\LOCAL\LastLogonReport.xlsx" -AutoSize -AutoFilter
