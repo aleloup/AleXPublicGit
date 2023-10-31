@@ -1,6 +1,0 @@
-Get-Process | Export-Excel -Path './CertExpiry.xlsx' -AutoSize -TableName CertExpiry -WorksheetName CertExpiry
-
-7%D0Us%bB&Lvaj!5nHt@3w3s
-
-
-Certification Management

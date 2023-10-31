@@ -1,7 +1,0 @@
-In Microsoft Exchange Module:
-
-To connect to Exchange Module:
-Connect-EXOPSSession -UserPrincipalName alex_leloup@aspensquare.com
-
-Run this script to get total mailbox count.
-Get-mailbox -resultsize unlimited -RecipientTypeDetails usermailbox |measure-object
