@@ -1,2 +1,2 @@
 # PublicGit
-Alex's Git for public projects
+Github to Track Powershell scripting change, documentation changes, etc.
